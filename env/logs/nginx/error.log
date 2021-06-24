@@ -1,0 +1,9 @@
+2021/04/16 13:11:11 [error] 10#10: *1 directory index of "/data/www/" is forbidden, client: 172.18.0.1, server: localhost, request: "GET / HTTP/1.1", host: "localhost"
+2021/04/16 13:11:12 [error] 10#10: *1 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 172.18.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2021/04/16 13:23:56 [error] 10#10: *1 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 172.20.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/index.php"
+2021/04/16 13:26:14 [error] 10#10: *4 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 172.20.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/index.php"
+2021/04/16 13:26:18 [error] 10#10: *5 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 172.20.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2021/04/16 13:26:40 [notice] 17#17: signal process started
+2021/04/16 13:27:37 [alert] 36#36: *30 open socket #13 left in connection 3
+2021/04/16 13:27:37 [alert] 36#36: aborting
+2021/04/16 13:29:40 [notice] 22#22: signal process started

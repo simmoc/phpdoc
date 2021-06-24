@@ -1,0 +1,1 @@
+0 23 * * *  sh /script/mysql/scripts/back-up.sh cron >> /var/log/cron.log 2>&1

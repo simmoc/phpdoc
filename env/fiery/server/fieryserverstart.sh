@@ -1,0 +1,1 @@
+nohup java -XX:-MaxFDLimit -Xms3750m -Xmx3750m -XX:ReservedCodeCacheSize=240m -XX:+UseCompressedOops -jar /var/fiery/fiery-server-0.5.8.0.jar --logging.file=/var/fiery/log/application.log  --server.port=9090 --fiery.kafkaenable=false --fiery.keepdataday=30 &
