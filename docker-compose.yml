@@ -1,0 +1,64 @@
+version: '3.2' # 表示该 Docker-Compose 文件使用的是 Version 3.2 file
+services:
+  php-fpm:
+    build: ./env/php-fpm/
+    ports:
+      - "9000:9000"
+    links:
+      - maria-db:maria-db
+      - redis-db:redis-db
+    volumes:
+      - ./:/data/www:rw
+      - ./env/config/php/php-dev.ini:/usr/local/etc/php/php.ini:ro
+      - ./env/config/php/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./env/logs/php-fpm:/var/log/php-fpm:rw
+    restart: always
+    command: php-fpm
+  php-worker:
+    build:
+      context: ./env/php-worker
+    volumes:
+      - ./:/data/www:rw
+      - ./env/config/supervisor/supervisord.d:/etc/supervisord.d
+  fiery-server:  # 指定服务名称
+    build: ./env/fiery/server # 指定 Dockerfile 所在路径
+    ports:    # 指定端口映射
+      - "9090:9090"
+  nginx:
+    build: ./env/nginx
+    depends_on:
+        - php-fpm
+    links:
+      - php-fpm:php-fpm
+    volumes:
+      - ./:/data/www:rw
+      - ./env/config/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./env/config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./env/logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    restart: always
+    command: nginx -g 'daemon off;'
+  maria-db:
+    build: ./env/mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./env/data/mysql:/var/lib/mysql:rw
+      - ./env/logs/mysql:/var/lib/mysql-logs:rw
+      - ./mysql/conf.d:/etc/mysql/conf.d:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: default
+      MYSQL_DATABASE: default
+      MYSQL_USER: default
+      MYSQL_PASSWORD: default
+    restart: always
+  redis-db:
+    build: ./env/redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./env/data/redis:/data
+    restart: always
