@@ -7,6 +7,7 @@ services:
     links:
       - maria-db:maria-db
       - redis-db:redis-db
+      - beanstalkd:beanstalkd
     volumes:
       - ./:/data/www:rw
       - ./env/config/php/php-dev.ini:/usr/local/etc/php/php.ini:ro
@@ -24,6 +25,14 @@ services:
     build: ./env/fiery/server # 指定 Dockerfile 所在路径
     ports:    # 指定端口映射
       - "9090:9090"
+    volumes:
+      - ./env/data/fiery:/var/fiery:rw
+  fieryclient:
+    image: simmoc/phpfieryclient:latest
+    volumes:
+      - ./env/data/logs/fiery:/var/log/fiery:rw
+    links:
+      - fieryserver:fieryserver
   nginx:
     build: ./env/nginx
     depends_on:
@@ -62,3 +71,49 @@ services:
     volumes:
       - ./env/data/redis:/data
     restart: always
+  beanstalkd:
+      build: ./env/beanstalk
+      ports:
+        - "11300:11300"
+      expose:
+        - "9100"
+  loki:
+    image: grafana/loki:2.0.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+  promtail:
+    image: grafana/promtail:2.0.0
+    volumes:
+      - ./data/log:/var/log
+    command: -config.file=/etc/promtail/config.yml
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    privileged: true
+    user: root
+    ports:
+      - 9091:9090
+    links:
+      - nginx:nginx
+      - php-fpm:php-fpm
+      - php-worker:php-worker
+      - maria-db:maria-db
+      - redis-db:redis-db
+      - beanstalkd:beanstalkd
+      - beanstalkd_exporter:beanstalkd_exporter
+    volumes:
+      #将刚刚准备好的defaults.ini直接映射到/usr/share/grafana/conf/defaults.ini路径
+      - ./env/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  beanstalkd_exporter:
+    image: messagebird/beanstalkd_exporter:latest
+    container_name: beanstalkd_exporter
+    links:
+      - beanstalkd:beanstalkd
+    expose:
+      - "8080"
