@@ -43,3 +43,4 @@ docker-compose restart {sevice-name} ex: nginx
 #重新构建镜像
 docker-compose build {images-name}
 ```
+test
